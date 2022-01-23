@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+    environment {
+        JOB_NAME = 'MNKC_Using_Jenkins'
+        NODE_ROOT = 'jenkins_conf'
+        WORKSPACE_LOCATION = 'workspace'
+        TERRAFORM_CODE_SRC = 'terraform_codes'
+        TERRAFORM_PROJECT_NAME = 'Multi_Cloud_MNKC_with_Jenkins'
+        ANSIBLE_CODE_SRC = 'ansible_codes'
+        ANSIBLE_PROJECT_NAME = 'mnkc'
+    }
+    stages {
+	    stage('Creating Infrastructure') {
+            steps {
+                node('terraform_node') {
+                        sh script:'''
+                             #!/bin/bash
+                              cd "/$TERRAFORM_CODE_SRC/$TERRAFORM_PROJECT_NAME"
+                              terraform init
+	                           terraform plan
+                              terraform apply --auto-approve
+                            '''
+                }
+	        }
+        }
+        stage('Metadata for Infrastructure') {
+            steps {
+                node('terraform_node') {
+                     dir("/${TERRAFORM_CODE_SRC}/${TERRAFORM_PROJECT_NAME}") {
+                      stash includes: 'ip.txt,k8s-cluster-vm-key.pem', name: 'inventory_key_stash'
+                  }   
+                }
+	        }
+        }
+        stage('Providing Required files to Ansible') {
+            steps{
+                node('ansible_node') {
+                    dir("/${ANSIBLE_CODE_SRC}/${ANSIBLE_PROJECT_NAME}") {
+                      unstash 'inventory_key_stash'
+                    }
+                }
+        	}
+        }
+         stage('Configuring Cluster using Ansible') {
+            steps{
+                node('ansible_node') {
+                    sh script:'''
+                             #!/bin/bash
+                              cd "/$ANSIBLE_CODE_SRC/$ANSIBLE_PROJECT_NAME"
+                              ansible-playbook create_cluster_from_scratch.yml
+                        '''
+                }
+        	}
+        }
+    }
+}
