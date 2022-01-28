@@ -1,0 +1,18 @@
+- name: Fetching from github
+  hosts: localhost
+  tasks:
+          - name: get inventory
+            get_url:
+                    dest: /ansible_codes/mnkc/inventory
+                    url: https://raw.githubusercontent.com/akhilesh-jain1729/Ansible-Internship-Project/main/inventory
+                    owner: centos
+                    group: centos
+                    
+          - name: get key
+            get_url:
+                    url: https://raw.githubusercontent.com/akhilesh-jain1729/Ansible-Internship-Project/main/k8s-cluster-vm-key.pem
+                    dest: /ansible_codes/mnkc/k8s-cluster-vm-key.pem
+                    mode: 0600
+                    owner: centos
+                    group: centos
+            ignore_errors: True

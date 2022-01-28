@@ -1,0 +1,11 @@
+- name: Adding new Slave to our Cluster
+  hosts: slaves
+  ignore_errors: yes
+  roles:
+          - slave
+  vars_files:
+          - vars.yml
+  tasks:
+          -  name: "Running Master's token to Slave Node"
+             command: "{{ token }}"
+

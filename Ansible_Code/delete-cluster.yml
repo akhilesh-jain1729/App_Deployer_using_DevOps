@@ -1,0 +1,10 @@
+---
+-  name: "Deleting Kubernetes Cluster"
+   hosts: aws_master
+   ignore_errors: yes
+   tasks:
+           -  name: Deleting using kubeadm
+              shell: "kubeadm reset cleanup-node  --force"
+
+           -  name: Clearing RAM
+              command: "echo 3 > /proc/sys/vm/drop_caches"

@@ -1,0 +1,17 @@
+---
+-  name: Creating a POD on this Cluster
+   hosts: aws_master 
+   vars_files:
+           - vars.yml
+   tasks:
+           -  name: "Launching Pod"
+#              command: "kubectl run {{ web_pod_name }} --image={{ image_name }}"
+              command: "kubectl create deployment {{ deployment_name }} --image={{ heart_image_name }}"
+              register: pod
+
+           -  name: "Launching Pod"
+              command: "kubectl expose deployment {{ deployment_name }} --type=NodePort --port={{ heart_image_port }}"
+
+           -  name: "checking pod"
+              debug: 
+                 msg: "{{ pod }}"
