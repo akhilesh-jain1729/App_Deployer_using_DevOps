@@ -1,0 +1,19 @@
+- name: Fetch the file from master to localhost
+  fetch: 
+         src: /run/flannel/subnet.env
+         dest: /tmp/ 
+         flat: yes
+  when: inventory_hostname in groups['aws_master']
+
+- name: Copy the file from localhost to azure-vm
+  file:
+         path: /run/flannel
+         state: directory
+  when: inventory_hostname in groups['azure_slave1']
+
+- name: Copy the file from localhost to azure-vm
+  copy: 
+         src: /tmp/subnet.env
+         dest: /run/flannel/subnet.env
+         force: yes
+  when: inventory_hostname in groups['azure_slave1']

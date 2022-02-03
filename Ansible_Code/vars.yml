@@ -1,4 +1,4 @@
-token: kubeadm join 13.126.75.16:6443 --token vfkwek.ufiilfro226mobna --discovery-token-ca-cert-hash sha256:2e78f375bfed125086962478b798efbd347607d6800207dfba70194bc1065702 
+token: kubeadm join 13.233.155.181:6443 --token 80dvsb.d93jpmepmhpxptw8 --discovery-token-ca-cert-hash sha256:c03513e2071e946bf1b3ed778421feccf3fab4a0d3ab6781f58d3b159194b9e7 
 web_image_name: vimal13/apache-webserver-php
 web_pod_name: httpd
 deployment_name: heart-deployment

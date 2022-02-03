@@ -119,13 +119,6 @@
 -  name: "running sysctl command"
    command: "sysctl --system"
 
-
--  name: Copying admin.conf file
-   copy:
-        src: "/etc/kubernetes/admin.conf"
-        dest: "{{ k8s_dir_path }}/config"
-        remote_src: yes
-
 -  name: "Creating Directory to store flannel yaml file"
    file:
         path: "/k8s"
@@ -141,6 +134,13 @@
         url: "{{ flannel_url2 }}"
         dest: "/k8s/"
 
+
+-  name: Set network in the $HOME/kube-flannel.yml file
+   lineinfile:
+        path: /k8s/kube-flannel.yml
+        regexp: '\"Network\":*'
+        line: "      \"Network\": \"{{ cidr_range }}\","
+
 #Creating Containers and Configuring Master
 
 -  name: "Start the Cluster"
@@ -151,17 +151,22 @@
    debug:
         msg: "{{ master_config }}"
 
--  name: Setup kubeconfig for home user
-   shell: "{{ item }}"
-   with_items:
-         - "mkdir -p $HOME/.kube"
-         - "cp -i /etc/kubernetes/admin.conf $HOME/.kube/config"
-         - "chown $(id -u):$(id -g) $HOME/.kube/config"
+-  name: Create /.kube directory
+   file:
+        path: $HOME/.kube
+        state: directory
 
--  name: Install Flannel pod network
-   command: "sudo kubectl apply -f kube-flannel-rbac.yml"
-   args:
-        chdir: /k8s/
+-  name: Copy kubernetes admin.conf file to /.kube/
+   copy:
+        src: /etc/kubernetes/admin.conf
+        dest: $HOME/.kube/config
+        remote_src: yes
+
+-  name: Change ownership of /.kube/config
+   file:
+        path: $HOME/.kube/config
+        owner: "centos"
+        group: "centos"
 
 -  name: Install Flannel pod network
    command: "sudo kubectl apply -f kube-flannel.yml"

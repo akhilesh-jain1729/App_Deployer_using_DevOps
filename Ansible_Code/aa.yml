@@ -1,0 +1,4 @@
+- name: Install web server
+  hosts: all
+  tasks:
+         - include_tasks: copy_flannel_file.yml 
