@@ -1,0 +1,10 @@
+-  name: Creating a POD on this Cluster
+   hosts: aws_master
+   tasks:
+           - name: "Deleting Pod"
+             command: "kubectl delete all --all"
+             register: pod
+           
+           - name: "checking pod"
+             debug:
+                msg: "{{ pod }}"

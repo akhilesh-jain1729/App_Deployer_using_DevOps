@@ -1,0 +1,6 @@
+- hosts: aws_master
+  gather_facts: yes
+  tasks:
+   - name: Show host's ip
+     debug:
+      msg: "{{ ansible_ssh_host }}"

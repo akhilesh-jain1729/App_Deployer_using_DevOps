@@ -1,0 +1,6 @@
+token: kubeadm join 13.126.75.16:6443 --token vfkwek.ufiilfro226mobna --discovery-token-ca-cert-hash sha256:2e78f375bfed125086962478b798efbd347607d6800207dfba70194bc1065702 
+web_image_name: vimal13/apache-webserver-php
+web_pod_name: httpd
+deployment_name: heart-deployment
+heart_image_name: visheshgargavi/deeplearning_heart
+heart_image_port: 81

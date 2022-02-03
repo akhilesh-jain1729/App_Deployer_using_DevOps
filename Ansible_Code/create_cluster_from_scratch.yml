@@ -1,0 +1,25 @@
+- name: Configuring Master
+  hosts: aws_master
+  ignore_errors: yes
+  roles:
+          - master
+
+- name: Running on Slave
+  hosts: slaves
+  ignore_errors: yes
+  roles:
+          - slave
+
+- name: Running on Slave
+  hosts: slaves
+  ignore_errors: yes
+  vars_files:
+         - vars.yml
+  tasks:
+         -  name: "Running Master's token to Slave Node"
+            command: "{{ token }}"
+
+- name: Install web server
+  hosts: all
+  tasks:
+         - include_tasks: copy_flannel_file.yml 

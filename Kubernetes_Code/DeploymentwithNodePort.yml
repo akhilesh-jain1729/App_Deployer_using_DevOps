@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  type: NodePort
+  selector:
+    matchLabels:
+      app: heart-app
+  ports:
+    - port: 81
+      targetPort: 30007
+      nodePort: 30007
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: heart-deployment
+  labels:
+    app: heart-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: heart-app
+  template:
+    metadata:
+      labels:
+        app: heart-app
+    spec:
+      containers:
+      - name: heart-app
+        image: visheshgargavi/deeplearning_heart
+        ports:
+        - containerPort: 81
