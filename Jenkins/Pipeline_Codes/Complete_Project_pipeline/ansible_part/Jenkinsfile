@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+    environment {
+        JOB_NAME = 'MNKC_Using_Jenkins'
+        NODE_ROOT = 'jenkins_conf'
+        WORKSPACE_LOCATION = 'workspace'
+        TERRAFORM_CODE_SRC = 'terraform_codes'
+        TERRAFORM_PROJECT_NAME = 'Multi_Cloud_MNKC_with_Jenkins'
+        ANSIBLE_CODE_SRC = 'ansible_codes'
+        ANSIBLE_PROJECT_NAME = 'mnkc'
+    }
+    stages {
+        stage('Configuring Cluster using Ansible') {
+            steps{
+                node('ansible_node') {
+                    sh script:'''
+                             #!/bin/bash
+                              cd "/$ANSIBLE_CODE_SRC/$ANSIBLE_PROJECT_NAME"
+                              ansible-playbook create_cluster_from_scratch.yml
+                              '''
+                }
+        	}
+        }
+        stage('Fetching Config File') {
+            steps{
+                node('ansible_node') {
+                    dir("/${ANSIBLE_CODE_SRC}/${ANSIBLE_PROJECT_NAME}/creds") {
+                        stash includes: 'config', name: 'cluster_config_stash'
+                    }
+        	}
+            }
+        }
+        stage('Email') {
+            steps {
+                node('ansible_node') {
+                  unstash 'cluster_config_stash'
+                  emailext attachmentsPattern: 'config', body: '''$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS:
+Check console output at $BUILD_URL to view the results. File Attached of config is there.''', recipientProviders: [developers()], subject: 'Config file of k8s master', to: 'akhileshjain9221@gmail.com'
+                }
+            }
+        }
+    }
+}
