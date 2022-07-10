@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+    environment {
+        JOB_NAME = 'MNKC_Using_Jenkins'
+        NODE_ROOT = 'jenkins_conf'
+        WORKSPACE_LOCATION = 'workspace'
+        TERRAFORM_CODE_SRC = 'terraform_codes'
+        TERRAFORM_PROJECT_NAME = 'Multi_Cloud_MNKC_with_Jenkins'
+    }
+    stages {
+	    stage('Deleting Infrastructure') {
+            steps {
+                node('terraform_node') {
+                        sh script:'''
+                             #!/bin/bash
+                              cd "/$TERRAFORM_CODE_SRC/$TERRAFORM_PROJECT_NAME"
+                              terraform destroy --auto-approve
+                            '''
+                }
+	        }
+	    }
+	    }
+        }
